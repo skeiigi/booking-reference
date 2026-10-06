@@ -18,6 +18,8 @@ Compose. SQLite и сертификаты HTTPS лежат в постоянны
 Подключитесь к ВМ по SSH и выполните:
 
 ```bash
+sudo apt-get update
+sudo apt-get install -y git
 git clone https://github.com/skeiigi/booking-reference.git
 cd booking-reference
 bash deploy/cloudru/prepare-host.sh
@@ -49,3 +51,8 @@ sudo docker compose --env-file deploy/cloudru/.env -f deploy/cloudru/compose.yam
 
 Для сохранения броней при пересоздании контейнера не запускайте `docker compose
 down -v`: этот флаг удаляет том с SQLite. Диск ВМ не заменяет резервную копию.
+
+После завершения демонстрации удалите в Cloud.ru ВМ и проверьте, не остались ли
+отдельно оплачиваемые диск и публичный IP. Остановка ВМ сама по себе не прекращает
+начисления за диск и IP. Следите за датой окончания гранта в разделе «Контроль
+затрат → Гранты».
