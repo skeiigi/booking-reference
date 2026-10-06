@@ -303,6 +303,8 @@ npm run issue:booking-link -- 123 http://localhost:8000
 
 ## Переменные окружения
 
+Для размещения учебной демонстрации на Cloud.ru см. [инструкцию для ВМ](deploy/cloudru/README.md).
+
 | Переменная | По умолчанию | Смысл |
 |---|---|---|
 | `BOOKING_PORT` | `8000` | порт сервиса |
@@ -328,6 +330,7 @@ docs/adr/                     архитектурные решения
 docs/pdr/                     продуктовое решение
 docs/ontology.md              доменная модель
 .github/workflows/ci.yml      проверка кода в GitHub Actions
+deploy/cloudru/              конфигурация учебного сайта на Cloud.ru
 ```
 
 ## Если что-то не завелось

@@ -124,6 +124,32 @@ jobs:
       - name: Проверить интерфейс и бронирование в контейнере
         run: node e2e/docker-smoke.mjs
 
+      - name: Проверить файлы размещения
+        env:
+          BOOKING_DOMAIN: http://127.0.0.1
+        run: |
+          bash -n deploy/cloudru/prepare-host.sh
+          docker compose -f deploy/cloudru/compose.yaml config --quiet
+          docker run --rm --env BOOKING_DOMAIN --volume "$PWD/deploy/cloudru/Caddyfile:/etc/caddy/Caddyfile:ro" caddy:2-alpine validate --config /etc/caddy/Caddyfile
+
+      - name: Запустить конфигурацию публичного сайта
+        env:
+          BOOKING_DOMAIN: http://127.0.0.1
+        run: docker compose -f deploy/cloudru/compose.yaml up -d --no-build
+
+      - name: Проверить прокси и закрытие служебных маршрутов
+        run: |
+          for attempt in {1..20}; do
+            if curl --fail --silent http://127.0.0.1/api/activities >/dev/null; then
+              break
+            fi
+            sleep 2
+          done
+          curl --fail --silent http://127.0.0.1/ >/dev/null
+          curl --fail --silent http://127.0.0.1/api/activities >/dev/null
+          test "$(curl --silent --output /dev/null --write-out '%{http_code}' --request POST http://127.0.0.1/api/activities)" = 403
+          test "$(curl --silent --output /dev/null --write-out '%{http_code}' --request POST http://127.0.0.1/api/schedules)" = 403
+
       - name: Показать логи при ошибке
         if: failure()
         run: docker logs booking-smoke
@@ -131,3 +157,9 @@ jobs:
       - name: Удалить тестовый контейнер
         if: always()
         run: docker rm --force booking-smoke || true
+
+      - name: Остановить тестовый сайт
+        if: always()
+        env:
+          BOOKING_DOMAIN: http://127.0.0.1
+        run: docker compose -f deploy/cloudru/compose.yaml down
