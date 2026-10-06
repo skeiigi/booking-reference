@@ -130,7 +130,7 @@ jobs:
         run: |
           bash -n deploy/cloudru/prepare-host.sh
           docker compose -f deploy/cloudru/compose.yaml config --quiet
-          docker run --rm --env BOOKING_DOMAIN --volume "$PWD/deploy/cloudru/Caddyfile:/etc/caddy/Caddyfile:ro" caddy:2-alpine validate --config /etc/caddy/Caddyfile
+          docker run --rm --env BOOKING_DOMAIN --volume "$PWD/deploy/cloudru/Caddyfile:/etc/caddy/Caddyfile:ro" caddy:2-alpine caddy validate --config /etc/caddy/Caddyfile
 
       - name: Запустить конфигурацию публичного сайта
         env:
