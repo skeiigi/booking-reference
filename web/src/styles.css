@@ -26,55 +26,41 @@
     "Helvetica Neue", Arial, "Noto Sans", sans-serif;
   --font-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
 
-  --bg: #f3f4ee;
-  --surface: #ffffff;
-  --surface-2: #f7f8f3;
-  --surface-3: #e9eee8;
-  --border: #dce4dc;
-  --border-strong: #bdcdc2;
+  --bg: light-dark(#f3f4ee, #101d1a);
+  --surface: light-dark(#ffffff, #1a2925);
+  --surface-2: light-dark(#f7f8f3, #20322c);
+  --surface-3: light-dark(#e9eee8, #2a3c35);
+  --border: light-dark(#dce4dc, #33473e);
+  --border-strong: light-dark(#bdcdc2, #4a6255);
 
-  --text: #18342f;
-  --text-muted: #536962;
-  --text-faint: #738880;
+  --text: light-dark(#18342f, #edf5f0);
+  --text-muted: light-dark(#536962, #b0c5ba);
+  --text-faint: light-dark(#738880, #91a99b);
 
-  --danger: #b42318;
-  --danger-soft: #fdf1f0;
-  --danger-line: #f1c9c5;
+  --danger: light-dark(#b42318, #ff8377);
+  --danger-soft: light-dark(#fdf1f0, #2a1a19);
+  --danger-line: light-dark(#f1c9c5, #4d2a26);
 
-  --ok: #14785c;
+  --ok: light-dark(#14785c, #59d1a0);
 
   --radius-sm: 11px;
   --radius: 17px;
   --radius-lg: 24px;
 
-  --shadow-1: 0 8px 24px -20px rgb(23 65 49 / 35%), 0 1px 2px rgb(23 65 49 / 4%);
-  --shadow-2: 0 20px 45px -20px rgb(23 65 49 / 28%), 0 3px 10px rgb(23 65 49 / 8%);
+  --shadow-1: 0 8px 24px -20px light-dark(rgb(23 65 49 / 35%), rgb(0 0 0 / 70%)),
+    0 1px 2px light-dark(rgb(23 65 49 / 4%), rgb(0 0 0 / 40%));
+  --shadow-2: 0 20px 45px -20px light-dark(rgb(23 65 49 / 28%), rgb(0 0 0 / 80%)),
+    0 3px 10px light-dark(rgb(23 65 49 / 8%), rgb(0 0 0 / 40%));
 
   --ease: cubic-bezier(0.2, 0.7, 0.3, 1);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --bg: #101d1a;
-    --surface: #1a2925;
-    --surface-2: #20322c;
-    --surface-3: #2a3c35;
-    --border: #33473e;
-    --border-strong: #4a6255;
+:root[data-theme="light"] {
+  color-scheme: light;
+}
 
-    --text: #edf5f0;
-    --text-muted: #b0c5ba;
-    --text-faint: #91a99b;
-
-    --danger: #ff8377;
-    --danger-soft: #2a1a19;
-    --danger-line: #4d2a26;
-
-    --ok: #59d1a0;
-
-    --shadow-1: 0 1px 2px rgb(0 0 0 / 40%);
-    --shadow-2: 0 14px 34px -14px rgb(0 0 0 / 70%), 0 2px 8px rgb(0 0 0 / 30%);
-  }
+:root[data-theme="dark"] {
+  color-scheme: dark;
 }
 
 /* 2. База и вспомогательные классы ---------------------------------------- */
@@ -83,6 +69,9 @@
 *::before,
 *::after {
   box-sizing: border-box;
+  transition-property: background-color, border-color, color, box-shadow, fill, stroke;
+  transition-duration: 0.35s;
+  transition-timing-function: var(--ease);
 }
 
 html {
@@ -163,26 +152,25 @@ code {
    в :root, они считались бы от значения по умолчанию и не менялись бы. */
 .app {
   --accent: #3b5bdb;
-  --accent-ink: color-mix(in oklab, var(--accent) 86%, #000 14%);
-  --accent-soft: color-mix(in oklab, var(--accent) 7%, var(--surface));
-  --accent-line: color-mix(in oklab, var(--accent) 34%, var(--border));
-  --accent-solid: var(--accent);
-  --accent-on-solid: #ffffff;
+  --accent-ink: light-dark(
+    color-mix(in oklab, var(--accent) 86%, #000 14%),
+    color-mix(in oklab, var(--accent) 48%, #fff 52%)
+  );
+  --accent-soft: light-dark(
+    color-mix(in oklab, var(--accent) 7%, var(--surface)),
+    color-mix(in oklab, var(--accent) 20%, var(--surface))
+  );
+  --accent-line: light-dark(
+    color-mix(in oklab, var(--accent) 34%, var(--border)),
+    color-mix(in oklab, var(--accent) 46%, var(--border))
+  );
+  --accent-solid: light-dark(var(--accent), color-mix(in oklab, var(--accent) 74%, #fff 26%));
+  --accent-on-solid: light-dark(#ffffff, #0b0e14);
 
   position: relative;
   min-height: 100dvh;
   display: flex;
   flex-direction: column;
-}
-
-@media (prefers-color-scheme: dark) {
-  .app {
-    --accent-ink: color-mix(in oklab, var(--accent) 48%, #fff 52%);
-    --accent-soft: color-mix(in oklab, var(--accent) 20%, var(--surface));
-    --accent-line: color-mix(in oklab, var(--accent) 46%, var(--border));
-    --accent-solid: color-mix(in oklab, var(--accent) 74%, #fff 26%);
-    --accent-on-solid: #0b0e14;
-  }
 }
 
 /* Мягкое свечение в цвете выбранной активности. Меняется вместе с ней. */
@@ -372,6 +360,39 @@ code {
   justify-content: space-between;
   gap: 20px;
   margin-bottom: 18px;
+}
+
+.topbar__actions {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.theme-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 42px;
+  padding: 8px 13px;
+  border: 1px solid var(--border-strong);
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--text);
+  font-size: 13px;
+  font-weight: 600;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.theme-toggle:hover {
+  border-color: var(--accent-line);
+  background: var(--accent-soft);
+}
+
+.theme-toggle svg {
+  width: 18px;
+  height: 18px;
 }
 
 .topbar__brand {
@@ -571,7 +592,10 @@ code {
 
 .activity {
   --activity-color: var(--accent);
-  --activity-soft: color-mix(in oklab, var(--activity-color) 7%, var(--surface));
+  --activity-soft: light-dark(
+    color-mix(in oklab, var(--activity-color) 7%, var(--surface)),
+    color-mix(in oklab, var(--activity-color) 18%, var(--surface))
+  );
   --activity-line: color-mix(in oklab, var(--activity-color) 42%, var(--border));
 
   position: relative;
@@ -590,12 +614,6 @@ code {
     background 0.18s var(--ease),
     translate 0.18s var(--ease),
     box-shadow 0.18s var(--ease);
-}
-
-@media (prefers-color-scheme: dark) {
-  .activity {
-    --activity-soft: color-mix(in oklab, var(--activity-color) 18%, var(--surface));
-  }
 }
 
 .activity:hover {
@@ -662,14 +680,11 @@ code {
 .activity__duration {
   font-size: 12.5px;
   font-weight: 600;
-  color: var(--activity-color);
+  color: light-dark(
+    var(--activity-color),
+    color-mix(in oklab, var(--activity-color) 52%, #fff 48%)
+  );
   font-variant-numeric: tabular-nums;
-}
-
-@media (prefers-color-scheme: dark) {
-  .activity__duration {
-    color: color-mix(in oklab, var(--activity-color) 52%, #fff 48%);
-  }
 }
 
 .activity__description {
@@ -1528,6 +1543,15 @@ code {
 }
 
 @media (max-width: 600px) {
+  .theme-toggle {
+    width: 42px;
+    padding: 8px;
+  }
+
+  .theme-toggle span {
+    display: none;
+  }
+
   .topbar__copy {
     padding: 27px 24px 30px;
   }

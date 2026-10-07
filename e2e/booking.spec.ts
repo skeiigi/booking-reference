@@ -189,3 +189,36 @@ test('на узком экране можно перейти от выбранн
     expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(width);
   }
 });
+
+test('тема переключается, сохраняется и учитывает настройки системы', async ({ page }) => {
+  await page.emulateMedia({ colorScheme: 'light' });
+  await page.goto('/');
+  await expect(page.getByRole('button', { name: 'Включить тёмную тему' })).toBeVisible();
+  await expect(page.locator('body')).toHaveCSS('background-color', 'rgb(243, 244, 238)');
+
+  await page.getByRole('button', { name: 'Включить тёмную тему' }).click();
+  await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
+  await expect(page.locator('body')).toHaveCSS('background-color', 'rgb(16, 29, 26)');
+  expect(await page.evaluate(() => localStorage.getItem('booking.theme'))).toBe('dark');
+
+  await page.reload();
+  await expect(page.getByRole('button', { name: 'Включить светлую тему' })).toBeVisible();
+  await expect(page.locator('body')).toHaveCSS('background-color', 'rgb(16, 29, 26)');
+
+  await page.evaluate(() => localStorage.removeItem('booking.theme'));
+  await page.emulateMedia({ colorScheme: 'dark' });
+  await page.reload();
+  await expect(page.locator('body')).toHaveCSS('background-color', 'rgb(16, 29, 26)');
+  await page.emulateMedia({ colorScheme: 'light' });
+  await expect(page.locator('body')).toHaveCSS('background-color', 'rgb(243, 244, 238)');
+
+  await page.setViewportSize({ width: 320, height: 720 });
+  await expect(page.getByRole('button', { name: 'Включить тёмную тему' })).toBeVisible();
+  expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(320);
+
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  const duration = await page.locator('body').evaluate((element) =>
+    getComputedStyle(element).transitionDuration,
+  );
+  expect(parseFloat(duration)).toBeLessThan(0.001);
+});

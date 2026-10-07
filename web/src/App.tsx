@@ -25,7 +25,7 @@ import { useAsyncData, useRememberedValue } from './hooks';
 import { ActivityPicker } from './components/ActivityPicker';
 import { BookingPanel } from './components/BookingPanel';
 import { HowItWorks } from './components/HowItWorks';
-import { CalendarIcon } from './components/Icons';
+import { CalendarIcon, MoonIcon, SunIcon } from './components/Icons';
 import { ManualTimePicker } from './components/ManualTimePicker';
 import { MyBookings } from './components/MyBookings';
 import { SlotGrid } from './components/SlotGrid';
@@ -34,9 +34,49 @@ import { Toast, type ToastMessage } from './components/Toast';
 import { WeekBar } from './components/WeekBar';
 
 const DEFAULT_ACCENT = '#3b5bdb';
+type Theme = 'light' | 'dark';
+
+function systemTheme(): Theme {
+  return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+}
+
+function updateThemeColor(theme: Theme): void {
+  document.querySelector('meta[name="theme-color"]')?.setAttribute(
+    'content', theme === 'dark' ? '#101d1a' : '#f3f4ee',
+  );
+}
 
 export function App() {
   const todayDate = today();
+  const [theme, setTheme] = useState<Theme>(() => {
+    const saved = document.documentElement.dataset.theme;
+    return saved === 'light' || saved === 'dark' ? saved : systemTheme();
+  });
+
+  useEffect(() => {
+    const media = window.matchMedia('(prefers-color-scheme: dark)');
+    const followSystem = (): void => {
+      if (document.documentElement.dataset.theme === undefined) {
+        const next = media.matches ? 'dark' : 'light';
+        setTheme(next);
+        updateThemeColor(next);
+      }
+    };
+    media.addEventListener('change', followSystem);
+    return () => media.removeEventListener('change', followSystem);
+  }, []);
+
+  function toggleTheme(): void {
+    const next = theme === 'dark' ? 'light' : 'dark';
+    document.documentElement.dataset.theme = next;
+    updateThemeColor(next);
+    try {
+      localStorage.setItem('booking.theme', next);
+    } catch {
+      // Тема остаётся выбранной до закрытия страницы.
+    }
+    setTheme(next);
+  }
 
   const [activityId, setActivityId] = useState<number | null>(null);
   const [weekStart, setWeekStart] = useState(() => startOfWeek(todayDate));
@@ -250,9 +290,20 @@ export function App() {
               <p className="topbar__subtitle">Запись на встречу без переписки</p>
             </div>
           </div>
-          <p className="topbar__note">
-            Учебный проект курса «ИИ для разработчиков», Сибирский федеральный университет
-          </p>
+          <div className="topbar__actions">
+            <p className="topbar__note">
+              Учебный проект курса «ИИ для разработчиков», Сибирский федеральный университет
+            </p>
+            <button
+              className="theme-toggle"
+              type="button"
+              onClick={toggleTheme}
+              aria-label={theme === 'dark' ? 'Включить светлую тему' : 'Включить тёмную тему'}
+            >
+              {theme === 'dark' ? <SunIcon /> : <MoonIcon />}
+              <span>{theme === 'dark' ? 'Светлая тема' : 'Тёмная тема'}</span>
+            </button>
+          </div>
         </div>
         <div className="topbar__hero">
           <div className="topbar__copy">
