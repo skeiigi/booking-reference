@@ -174,3 +174,18 @@ test.describe.serial('бронирование тайм-слота', () => {
     await expect(page.getByRole('button', { name: /выбрано$/ })).toHaveCount(2);
   });
 });
+
+test('на узком экране можно перейти от выбранного слота к форме без горизонтальной прокрутки', async ({ page }) => {
+  for (const width of [320, 375, 768]) {
+    await page.setViewportSize({ width, height: 800 });
+    await page.goto('/');
+    await page.getByRole('button', { name: 'Следующая неделя' }).click();
+    await page.getByRole('button', { name: /свободно$/ }).first().click();
+
+    const bookingLink = page.getByRole('link', { name: /Перейти к оформлению/ });
+    await expect(bookingLink).toBeVisible();
+    await bookingLink.click();
+    await expect(page.getByTestId('booking-form')).toBeInViewport();
+    expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(width);
+  }
+});

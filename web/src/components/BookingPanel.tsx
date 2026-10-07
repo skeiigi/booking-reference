@@ -60,7 +60,7 @@ export function BookingPanel(props: Props) {
   };
 
   return (
-    <form className="panel" onSubmit={handleSubmit} noValidate data-testid="booking-form">
+    <form className="panel" id="booking" onSubmit={handleSubmit} noValidate data-testid="booking-form">
       <h2 className="panel__title">{slots.length === 1 ? 'Запись на встречу' : `Запись на ${slotsLabel(slots.length)}`}</h2>
 
       <dl className="summary" style={{ '--activity-color': activity.color } as CSSProperties}>

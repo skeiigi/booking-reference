@@ -240,18 +240,34 @@ export function App() {
       </a>
 
       <header className="topbar">
-        <div className="topbar__brand">
-          <span className="topbar__mark" aria-hidden="true">
-            <CalendarIcon />
-          </span>
-          <div>
-            <h1 className="topbar__title">Тайм-слоты</h1>
-            <p className="topbar__subtitle">Запись на встречу без переписки</p>
+        <div className="topbar__row">
+          <div className="topbar__brand">
+            <span className="topbar__mark" aria-hidden="true">
+              <CalendarIcon />
+            </span>
+            <div>
+              <h1 className="topbar__title">Тайм-слоты</h1>
+              <p className="topbar__subtitle">Запись на встречу без переписки</p>
+            </div>
+          </div>
+          <p className="topbar__note">
+            Учебный проект курса «ИИ для разработчиков», Сибирский федеральный университет
+          </p>
+        </div>
+        <div className="topbar__hero">
+          <div className="topbar__copy">
+            <p className="topbar__eyebrow">Онлайн-запись · время Красноярска</p>
+            <p className="topbar__headline">Найдите время для важного разговора.</p>
+            <p className="topbar__description">
+              Выберите формат встречи и свободный слот. Подтверждение появится сразу после записи.
+            </p>
+          </div>
+          <div className="topbar__illustration" aria-hidden="true">
+            <span className="topbar__orbit topbar__orbit--outer" />
+            <span className="topbar__orbit topbar__orbit--inner" />
+            <span className="topbar__orbit-center"><CalendarIcon /></span>
           </div>
         </div>
-        <p className="topbar__note">
-          Учебный проект курса «ИИ для разработчиков», Сибирский федеральный университет
-        </p>
       </header>
 
       <main className="layout">
@@ -373,6 +389,13 @@ export function App() {
           <HowItWorks />
         </aside>
       </main>
+
+      {selected.length > 0 && confirmed === null && (
+        <a className="mobile-booking-link" href="#booking">
+          <span>Выбрано: {slotsLabel(selected.length)}</span>
+          <strong>Перейти к оформлению <span aria-hidden="true">→</span></strong>
+        </a>
+      )}
 
       <footer className="footer">
         <p>
